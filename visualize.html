@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Ambivibe Data Visualization Tool</h1>
+
+<p id="instructions">Refresh to see current results. Please wait 10-15 seconds after pressing refresh to see data.</p>
+
+<table id="ambivibeVisualizationTable" border="1">
+<thead>
+<tr><th> Status </th>
+    <th> Minutes Since Last Call Home </th>
+    <th> Participant Number </th>
+    <th> Time of Last Call Home </th>
+    <th> Date of Last Call Home </th>
+    <th> Ambivibe Unique Identifier For Participant </th>
+    <th> Experiment Condition </th>
+    <th> Step Count </th>
+</tr>
+</thead>
+<tbody id="ambivibeVisualizationTableData"></tbody>
+</table>
+
+<script src="https://www.gstatic.com/firebasejs/3.2.0/firebase.js"></script>
+<script>
+
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyD5DcBl_7SQEmTygb5qla5hRf2GFpsySEk",
+    authDomain: "ambivibe-511ab.firebaseapp.com",
+    databaseURL: "https://ambivibe-511ab.firebaseio.com",
+    storageBucket: "ambivibe-511ab.appspot.com",
+  };
+  firebase.initializeApp(config);
+  var database = firebase.database();
+
+  // Retrieve data from firebase, then do the inner function on that data
+  firebase.database().ref('/MostRecentCallHome/').once('value').then(function(jsonOfSnapshots) {
+    
+    // Local Variables
+    var allSnapshots = jsonOfSnapshots.val();
+    var tableBody = document.getElementById("ambivibeVisualizationTableData");
+    var currentTime = Math.floor(Date.now() / 1000);
+    var tableRow;
+    var cellForTableRow;
+
+    for (var oneSnapshot in allSnapshots) {
+
+      // Insert an entirely new row in table for each user
+      var snapshot = allSnapshots[oneSnapshot];
+      tableRow = tableBody.insertRow(tableBody.rows.length);
+
+      // Cell for "Status"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      var secondsSinceLastCallHome = currentTime - snapshot["1_UnixTime"];
+      var minutesSinceLastCallHome = Math.floor(secondsSinceLastCallHome / 60);
+      if(minutesSinceLastCallHome > 180){
+        cellForTableRow.setAttribute("bgcolor","#FF0000");
+      } else if (minutesSinceLastCallHome > 60) {
+        cellForTableRow.setAttribute("bgcolor","#FFFF00");
+      } else {
+        cellForTableRow.setAttribute("bgcolor","#00FF00");
+      }
+
+      // Cell for "Minutes Since Last Call Home"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      cellForTableRow.setAttribute("align", "center");
+      cellForTableRow.innerHTML = minutesSinceLastCallHome;
+
+      // Cell for "Participant Number"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      cellForTableRow.setAttribute("align", "center");
+      var arrayOfPartipantNumbers = {
+        "5812d95be775ff45cd564b29aadb50da": "Krister",
+        "b963dd539687746ab9028d4b4c0ec396": "Jessica",
+        "6fc29ae1eab0ff833f1d21f362ed5a52": "Dr. Landay",
+        "5914f70435e369f49cd2d33295250263": "P01",
+        "549144ac42eb1c40f076965760419afd": "P02",
+        "71d477aa0e5a8ee2990eae2ad279111e": "P03",
+        "c091ef3da5f59e336064c1d0828c93bb": "P04",
+        "8b512c1e9fb4b3d61c9104eda739c6db": "P05",
+        "4448ef2f34701acede2fd580dee1eba3": "P06",
+        "c6464bcf7e5c44a472072a2771a667d6": "P07",
+        "d944b08acefd9fc7eadcfa11fb3e86be": "P08",
+        "9d5b8086a6b87a8d0e28d722abc29392": "P09",
+        "4c25a2fdcff7a998c7315df5d36858af": "P10",
+        "f1399d416d33f00e0a8e4cdd40ac5196": "P11",
+        "84a65eeaa86681e41affad4030a45ea9": "P12",
+        "d6f9efffa5f56ccc18a98bb659703f36": "P13",
+        "e6df6c025052769035596e53c8ebd710": "P14",
+        "3d1895b4ef785df8fea35696338747da": "P15",
+        "a05553c69bde0fd6ec5d40ca8145ca0a": "P16",
+        "8f1ca836851e6e4eefa37e64e75c2928": "P17",
+        "bbd8d98525c27948baac82deafcad661": "P18",
+        "a71fd3752ba3424680ad5ddb0b9fbd78": "P19",
+        "46656a0249b4fb19b8a3870afea3386a": "P20",
+        "b43113c4bfafca918c8513ebf8673a11": "P21",
+        "280a73c51e4cc4fefe95afe1152882cd": "P22",
+        "b80e69fc13719c38eac49cf4725a38c2": "P23",
+        "1c4b70dcd3d1e312f287e8ee1f74e9f8": "P24",
+        "ddf391f4bd0d4d9112fd149ef6f8a9a2": "P25",
+        "6b0b3c1f8b80ae4a6ec4b182e7ab0f48": "P26",
+        "5ae045691e5a0ed6a44a128b522fd195": "P27",
+        "a54d5c125193767ae9a25194c15ceea7": "P28",
+        "31b7e0b0bb199af8a9ca362acc350418": "P29",
+        "884544547933d208726bf9751b5c128f": "P30",
+        "f0dd7fa64bc9a4fe9a3949eb5ff5799b": "P31",
+        "81ede2f643f4cb33c4dd04bfdc756d84": "P32",
+        "f4035ffcad962afd69d1519d591af7f8": "P33",
+        "a991899ba0831d265d8fa335223e9fc3": "P34",
+        "3d8d8a93dcf5d5845c7e0ba107523852": "P35",
+        "0435864cc37fe801cb1f1ff8fc0599b4": "P36",
+        "71444352026ce1133df4c29525c431e7": "P37",
+        "793d1f1cf9e22998ce55fc80ebabc59d": "P38",
+        "91a5d816c74bb7e4564ba1ab97d80a45": "P39",
+        "9b558dd43202e36f201b6f84a690d408": "P40",
+        "941193583bbc3c9829a8d894551b51f4": "P41",
+        "c2f864dfd6f9b537c3994e0d0b5a476c": "P42",
+        "72f8dad2947021b42fbfe6412b36cba5": "P43",
+        "3214c9500d834d914ae40b79de3367a4": "P44"
+      };
+      var participantNumber = arrayOfPartipantNumbers[(snapshot["2_AmbivibeUniqueSoftwareID"]).toString()];
+      if(participantNumber){
+        cellForTableRow.innerHTML = participantNumber;
+      } else {
+        cellForTableRow.innerHTML = "Participant Number Not Yet Correlated To Unique ID For This Watch.";
+      }
+
+      // Cell for "Time of Last Call Home"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      cellForTableRow.setAttribute("align", "center");
+      cellForTableRow.innerHTML = snapshot["3_TimeOfDay"];
+
+      // Cell for "Date of Last Call Home"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      cellForTableRow.setAttribute("align", "center");
+      cellForTableRow.innerHTML = snapshot["4_Date"];
+
+      // Cell for "Ambivibe Unique Identifier For Participant"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      cellForTableRow.setAttribute("align", "center");
+      cellForTableRow.innerHTML = snapshot["2_AmbivibeUniqueSoftwareID"];
+
+      // Cell for "Experiment Condition"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      cellForTableRow.setAttribute("align", "center");
+      var arrayOfCombinationConditions = {
+        "1": "Visual_Only_Condition",
+        "2": "Vibration_Only_Condition",
+        "3": "Old_Combination_Condition",
+        "4": "Unassigned_Condition",
+        "5": "Lab_Condition_For_Testing_Vibrations",
+        "6": "Combination_Condition"
+      };
+      var conditionName = arrayOfCombinationConditions[(snapshot["5_ExperimentCondition"]).toString()];
+      if(conditionName){
+        cellForTableRow.innerHTML = conditionName;
+      } else {
+        cellForTableRow.innerHTML = "Unknown Condition";
+      }
+
+      // Cell for "Step Count"
+      cellForTableRow = tableRow.insertCell(tableRow.cells.length);
+      cellForTableRow.setAttribute("align", "center");
+      cellForTableRow.innerHTML = snapshot["6_StepCount"];
+    }
+  });
+
+</script>
+
+</body>
+</html>
